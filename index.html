@@ -6,6 +6,7 @@
   <meta name="description" content="Track MSX auctions, listing prices and sale history across marketplaces." />
   <title>MSX Auction Tracker</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="scan.css" />
 </head>
 <body>
   <header class="topbar">
@@ -17,6 +18,7 @@
       </div>
     </div>
     <div class="top-actions">
+      <button id="scanAllButton" class="button primary">Scan all</button>
       <button id="seedDemoButton" class="button ghost">Load demo data</button>
       <button id="clearButton" class="button ghost danger">Clear local data</button>
     </div>
@@ -118,8 +120,12 @@
                 <span class="eyebrow">ITEM TYPE</span>
                 <h2 id="detailName"></h2>
                 <p id="detailKeywords"></p>
+                <p id="scanStatus" class="scan-status"></p>
               </div>
-              <button id="deleteWatchButton" class="button ghost danger">Delete item type</button>
+              <div class="detail-actions">
+                <button id="scanWatchButton" class="button primary">Scan now</button>
+                <button id="deleteWatchButton" class="button ghost danger">Delete item type</button>
+              </div>
             </div>
 
             <div class="subheading-row">
@@ -199,5 +205,6 @@
   </template>
 
   <script src="app.js" defer></script>
+  <script src="scan.js" defer></script>
 </body>
 </html>
