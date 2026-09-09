@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Track MSX auctions, listing prices and sale history across marketplaces." />
+  <title>MSX Auction Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">MSX</div>
+      <div>
+        <h1>MSX Auction Tracker</h1>
+        <p>Find, track and compare retro hardware listings</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button id="seedDemoButton" class="button ghost">Load demo data</button>
+      <button id="clearButton" class="button ghost danger">Clear local data</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero-grid">
+      <article class="panel accent-panel">
+        <div>
+          <span class="eyebrow">AUTOMATIC SEARCH</span>
+          <h2>Track an item type</h2>
+          <p>Add a model and one or more search terms. Marketplace collectors can periodically discover new auctions for it.</p>
+        </div>
+        <form id="watchForm" class="form-grid">
+          <label>
+            Item type
+            <input id="watchName" required placeholder="Panasonic FS-A1GT" />
+          </label>
+          <label>
+            Search keywords
+            <input id="watchKeywords" required placeholder="FS-A1GT, FS A1GT, Panasonic A1GT" />
+          </label>
+          <label>
+            Sources
+            <select id="watchSources" multiple size="4">
+              <option value="Yahoo Auctions" selected>Yahoo Auctions</option>
+              <option value="Buyee">Buyee</option>
+              <option value="Amazon Japan">Amazon Japan</option>
+              <option value="eBay">eBay</option>
+            </select>
+          </label>
+          <button class="button primary" type="submit">Add keyword watch</button>
+        </form>
+      </article>
+
+      <article class="panel">
+        <div>
+          <span class="eyebrow">MANUAL TRACKING</span>
+          <h2>Add a listing URL</h2>
+          <p>Add any auction or marketplace URL. Until a source collector is connected, price and end time can be entered manually.</p>
+        </div>
+        <form id="listingForm" class="form-grid">
+          <label>
+            Listing URL
+            <input id="listingUrl" type="url" required placeholder="https://..." />
+          </label>
+          <label>
+            Item type
+            <input id="listingType" required list="watchNames" placeholder="Panasonic FS-A1GT" />
+            <datalist id="watchNames"></datalist>
+          </label>
+          <div class="inline-fields">
+            <label>
+              Current price
+              <input id="listingPrice" type="number" min="0" step="1" required placeholder="98000" />
+            </label>
+            <label>
+              Currency
+              <select id="listingCurrency">
+                <option>JPY</option>
+                <option>EUR</option>
+                <option>USD</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            Auction ends
+            <input id="listingEnds" type="datetime-local" />
+          </label>
+          <button class="button primary" type="submit">Track URL</button>
+        </form>
+      </article>
+    </section>
+
+    <section class="metrics" id="globalMetrics"></section>
+
+    <section class="layout">
+      <aside class="panel sidebar">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">WATCHLIST</span>
+            <h2>Item types</h2>
+          </div>
+          <span class="count-badge" id="watchCount">0</span>
+        </div>
+        <div id="watchList" class="watch-list"></div>
+      </aside>
+
+      <div class="content-stack">
+        <section class="panel" id="selectedWatchPanel">
+          <div id="emptyWatch" class="empty-state">
+            <h2>Select an item type</h2>
+            <p>Add a keyword watch or a manual listing to start building price history.</p>
+          </div>
+
+          <div id="watchDetail" hidden>
+            <div class="detail-head">
+              <div>
+                <span class="eyebrow">ITEM TYPE</span>
+                <h2 id="detailName"></h2>
+                <p id="detailKeywords"></p>
+              </div>
+              <button id="deleteWatchButton" class="button ghost danger">Delete item type</button>
+            </div>
+
+            <div class="subheading-row">
+              <div>
+                <h3>Current listings</h3>
+                <p>Live or manually tracked listings for this item type.</p>
+              </div>
+            </div>
+            <div id="currentListings" class="listing-grid"></div>
+
+            <div class="history-header">
+              <div>
+                <h3>Auction history</h3>
+                <p>Completed tracked auctions inside the selected timeframe.</p>
+              </div>
+              <div class="range-buttons" id="rangeButtons">
+                <button data-days="7">7d</button>
+                <button data-days="30">30d</button>
+                <button data-days="90" class="active">90d</button>
+                <button data-days="365">1y</button>
+                <button data-days="all">All</button>
+              </div>
+            </div>
+
+            <div id="historyStats" class="metrics compact"></div>
+            <div class="chart-wrap">
+              <div id="historyChart" class="chart"></div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Marketplace</th>
+                    <th>Listing</th>
+                    <th class="numeric">Final price</th>
+                  </tr>
+                </thead>
+                <tbody id="historyRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel integration-panel">
+          <div>
+            <span class="eyebrow">COLLECTOR STATUS</span>
+            <h2>Marketplace integrations</h2>
+            <p>The site is ready for scheduled collectors. APIs/credentials are still required for real automatic discovery and price refresh.</p>
+          </div>
+          <div class="integration-grid">
+            <div><strong>Yahoo Auctions / Buyee</strong><span class="status pending">Needs connector</span></div>
+            <div><strong>Amazon Japan</strong><span class="status pending">Needs API</span></div>
+            <div><strong>eBay</strong><span class="status pending">Needs API</span></div>
+            <div><strong>Manual URLs</strong><span class="status ready">Ready</span></div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <template id="listingTemplate">
+    <article class="listing-card">
+      <div class="listing-topline">
+        <span class="source"></span>
+        <span class="status-pill"></span>
+      </div>
+      <h4 class="listing-title"></h4>
+      <div class="price"></div>
+      <div class="ends"></div>
+      <div class="listing-actions">
+        <a class="button small ghost open-link" target="_blank" rel="noopener noreferrer">Open listing</a>
+        <button class="button small ghost mark-sold">Mark sold</button>
+        <button class="button small ghost danger remove-listing">Remove</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
